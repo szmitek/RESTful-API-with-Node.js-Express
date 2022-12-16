@@ -1,5 +1,8 @@
-const app = require('express')();
+const express = require("express")
+const app = express();
 const homeController = require('../controllers/homeController');
+
+app.use( express.json() );
 
 
 app.route('/').get(homeController.homePage)
