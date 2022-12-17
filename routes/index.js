@@ -14,6 +14,10 @@ app
     .post(userController.createUser)
     .get(userController.getUser)
 
+app
+    .route('/users/:id')
+    .put(userController.putUser)
+
 const PORT = process.env.PORT || 8080
 app.listen(
     PORT,
