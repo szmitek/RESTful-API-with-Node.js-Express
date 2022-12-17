@@ -28,3 +28,13 @@ exports.putUser = (req, res) => {
     res.send(user);
     res.status(200).json(user);
 }
+
+exports.deleteUser = (req, res) => {
+    const user = users.find(
+        x => x.id === parseInt(req.params.id)
+    )
+    const index = users.indexOf(user);
+    users.splice(index, 1);
+    res.send(user)
+    res.status(204).json(user);
+}
