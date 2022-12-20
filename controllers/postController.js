@@ -38,3 +38,35 @@ exports.getPost = (req, res) => {
         res.status(404).send('User not found');
     }
 };
+
+exports.updatePost = (req, res) => {
+    const user = users.find((x) => x.id === req.params.userId);
+    if (user) {
+        const post = user.posts.find((x) => x.id === req.params.id);
+        if (post) {
+            post.title = req.body.title;
+            post.description = req.body.description;
+            res.status(200).json(post);
+        } else {
+            res.status(404).send('Post not found');
+        }
+    } else {
+        res.status(404).send('User not found');
+    }
+};
+
+exports.deletePost = (req, res) => {
+    const user = users.find((x) => x.id === req.params.userId);
+    if (user) {
+        const post = user.posts.find((x) => x.id === req.params.id);
+        if (post) {
+            const index = user.posts.indexOf(post);
+            user.posts.splice(index, 1);
+            res.status(204).send();
+        } else {
+            res.status(404).send('Post not found');
+        }
+    } else {
+        res.status(404).send('User not found');
+    }
+};

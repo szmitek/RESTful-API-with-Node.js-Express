@@ -22,6 +22,8 @@ app.delete('/users/:id', userController.deleteUser);
 app.get('/users/:userId/posts', postController.getPosts);
 app.get('/users/:userId/posts/:id', postController.getPost);
 app.post('/users/:userId/posts', postController.createPost);
+app.put('/users/:userId/posts/:id', postController.updatePost);
+app.delete('/users/:userId/posts/:id', postController.deletePost);
 
 const PORT = process.env.PORT || 8080
 app.listen(
