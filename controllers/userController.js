@@ -1,9 +1,9 @@
-const uuidv4 = require('uuidv4');  // For generating unique IDs
+const uuid = require('uuid');  // For generating unique IDs
 const users = require('../data/users');
 
 exports.createUser = (req, res) => {
     const user = {
-        id: uuidv4(),  // Generate a unique ID
+        id: uuid.v4(),  // Generate a unique ID
         name: req.body.name,
         posts: [],
     };
