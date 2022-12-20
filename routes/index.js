@@ -1,23 +1,26 @@
 const express = require("express")
 const app = express();
+
 const homeController = require('../controllers/homeController');
 const userController = require("../controllers/userController");
+const postController = require("../controllers/postController");
 
-app.use( express.json() );
+// Middleware to parse the body of the request as JSON
+app.use(express.json());
 
-app
-    .route('/')
-    .get(homeController.homePage)
+// Home page
+app.get('/', homeController.homePage)
 
-app
-    .route('/users')
-    .post(userController.createUser)
-    .get(userController.getUser)
+// User routes
+app.get('/users', userController.getUsers);
+app.get('/users/:id', userController.getUser);
+app.post('/users', userController.createUser);
+app.put('/users/:id', userController.updateUser);
+app.delete('/users/:id', userController.deleteUser);
 
-app
-    .route('/users/:id')
-    .put(userController.putUser)
-    .delete(userController.deleteUser)
+// Post routes
+app.get('/users/:userId/posts', postController.getPosts);
+app.get('/users/:userId/posts/:id', postController.getPost);
 
 const PORT = process.env.PORT || 8080
 app.listen(
