@@ -1,4 +1,3 @@
-const users = require('../data/users');
 const { db } = require('../config');
 
 exports.createUser = (req, res) => {
@@ -91,12 +90,18 @@ exports.updateUser = (req, res) => {
 };
 
 exports.deleteUser = (req, res) => {
-    const user = users.find((x) => x.id === req.params.id);
-    if (user) {
-        const index = users.indexOf(user);
-        users.splice(index, 1);
-        res.status(204).send();
-    } else {
-        res.status(404).send('User not found');
-    }
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.id);
+
+    // delete the user
+    userRef.delete()
+        .then(() => {
+            // return a 204 to indicate that the delete was successful
+            res.status(204).send();
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
