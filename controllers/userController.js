@@ -25,16 +25,47 @@ exports.createUser = (req, res) => {
 };
 
 exports.getUsers = (req, res) => {
-    res.status(200).json(users);
+    // get a reference to the "users" collection
+    const usersRef = db.collection('users');
+
+    // get all documents in the collection
+    usersRef.get()
+        .then((snapshot) => {
+            // build an array of users from the query snapshot
+            const users = snapshot.docs.map((doc) => {
+                return { id: doc.id, ...doc.data() };
+            });
+
+            // return the array of users
+            res.send(users);
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.getUser = (req, res) => {
-    const user = users.find((x) => x.id === req.params.id);
-    if (user) {
-        res.status(200).json(user);
-    } else {
-        res.status(404).send('User not found');
-    }
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.id);
+
+    // get the data for the user
+    userRef.get()
+        .then((doc) => {
+            if (doc.exists) {
+                // return the user data
+                res.send(doc.data());
+            } else {
+                // return a 404 if the user was not found
+                res.status(404).send('User not found');
+            }
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.updateUser = (req, res) => {
