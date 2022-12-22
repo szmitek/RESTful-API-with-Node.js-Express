@@ -69,13 +69,25 @@ exports.getUser = (req, res) => {
 };
 
 exports.updateUser = (req, res) => {
-    const user = users.find((x) => x.id === req.params.id);
-    if (user) {
-        user.name = req.body.name;
-        res.status(200).json(user);
-    } else {
-        res.status(404).send('User not found');
-    }
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.id);
+
+    // update the data for the user
+    userRef.update({
+        userName: req.body.userName,
+    })
+        .then(() => {
+            // return the updated user data
+            userRef.get()
+                .then((doc) => {
+                    res.send(doc.data());
+                });
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.deleteUser = (req, res) => {
