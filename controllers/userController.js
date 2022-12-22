@@ -1,14 +1,27 @@
-const uuid = require('uuid');  // For generating unique IDs
 const users = require('../data/users');
+const { db } = require('../config');
 
 exports.createUser = (req, res) => {
-    const user = {
-        id: uuid.v4(),  // Generate a unique ID
-        name: req.body.name,
-        posts: [],
+    // create a new document in the "users" collection
+    const userRef = db.collection('users').doc();
+
+    // set the data for the new document
+    const userData = {
+        id: userRef.id,
+        userName: req.body.userName,
     };
-    users.push(user);
-    res.status(201).json(user);
+
+    // write the data to the database
+    userRef.set(userData)
+        .then(() => {
+            // return the created user
+            res.send(userData);
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.getUsers = (req, res) => {
