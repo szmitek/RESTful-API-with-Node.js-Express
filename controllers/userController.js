@@ -1,5 +1,6 @@
 const { db } = require('../config');
 
+// create a user
 exports.createUser = (req, res) => {
     // create a new document in the "users" collection
     const userRef = db.collection('users').doc();
@@ -23,6 +24,7 @@ exports.createUser = (req, res) => {
         });
 };
 
+// get a list of users
 exports.getUsers = (req, res) => {
     // get a reference to the "users" collection
     const usersRef = db.collection('users');
@@ -45,6 +47,7 @@ exports.getUsers = (req, res) => {
         });
 };
 
+// get a specific user
 exports.getUser = (req, res) => {
     // get a reference to the user document
     const userRef = db.collection('users').doc(req.params.id);
@@ -67,6 +70,7 @@ exports.getUser = (req, res) => {
         });
 };
 
+// update a user
 exports.updateUser = (req, res) => {
     // get a reference to the user document
     const userRef = db.collection('users').doc(req.params.id);
@@ -89,6 +93,7 @@ exports.updateUser = (req, res) => {
         });
 };
 
+// delete a user
 exports.deleteUser = (req, res) => {
     // get a reference to the user document
     const userRef = db.collection('users').doc(req.params.id);
