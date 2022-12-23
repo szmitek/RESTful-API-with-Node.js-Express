@@ -1,19 +1,35 @@
-const uuid = require('uuid');  // For generating unique IDs
-const users = require('../data/users');
+//const uuid = require('uuid');  // For generating unique IDs
+//const users = require('../data/users');
+const { db } = require('../config');
 
 exports.createPost = (req, res) => {
-    const user = users.find((x) => x.id === req.params.userId);
-    if (user) {
-        const post = {
-            id: uuid.v4(),  // Generate a unique ID
-            title: req.body.title,
-            description: req.body.description,
-        };
-        user.posts.push(post);
-        res.status(201).json(post);
-    } else {
-        res.status(404).send('User not found');
-    }
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.userId);
+
+    // get a reference to the "posts" subcollection of the user document
+    const postsRef = userRef.collection('posts');
+
+    // create a new document in the "posts" subcollection
+    const postRef = postsRef.doc();
+
+    // set the data for the new document
+    const postData = {
+        id: postRef.id,
+        title: req.body.title,
+        description: req.body.description,
+    };
+
+    // write the data to the database
+    postRef.set(postData)
+        .then(() => {
+            // return the created post
+            res.send(postData);
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.getPosts = (req, res) => {
