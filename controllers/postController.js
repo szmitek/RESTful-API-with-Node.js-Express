@@ -110,18 +110,23 @@ exports.updatePost = (req, res) => {
         });
 };
 
+// delete a post for a user
 exports.deletePost = (req, res) => {
-    const user = users.find((x) => x.id === req.params.userId);
-    if (user) {
-        const post = user.posts.find((x) => x.id === req.params.id);
-        if (post) {
-            const index = user.posts.indexOf(post);
-            user.posts.splice(index, 1);
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.userId);
+
+    // get a reference to the specific post document
+    const postRef = userRef.collection('posts').doc(req.params.postId);
+
+    // delete the post
+    postRef.delete()
+        .then(() => {
+            // return a 204 to indicate that the delete was successful
             res.status(204).send();
-        } else {
-            res.status(404).send('Post not found');
-        }
-    } else {
-        res.status(404).send('User not found');
-    }
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
