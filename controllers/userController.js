@@ -2,6 +2,13 @@ const { db } = require('../config');
 
 // create a user
 exports.createUser = (req, res) => {
+    // validate the request body
+    if (!req.body.userName) {
+        // return a 400 if the userName field is missing or empty
+        res.status(400).send('Invalid input: userName field is required!');
+        return;
+    }
+
     // create a new document in the "users" collection
     const userRef = db.collection('users').doc();
 
@@ -83,7 +90,11 @@ exports.updateUser = (req, res) => {
             // return the updated user data
             userRef.get()
                 .then((doc) => {
-                    res.send(doc.data());
+                    if (doc.exists) {
+                        res.send(doc.data());
+                    } else {
+                        res.status(404).send('User not found');
+                    }
                 });
         })
         .catch((error) => {
@@ -98,11 +109,25 @@ exports.deleteUser = (req, res) => {
     // get a reference to the user document
     const userRef = db.collection('users').doc(req.params.id);
 
-    // delete the user
-    userRef.delete()
-        .then(() => {
-            // return a 204 to indicate that the delete was successful
-            res.status(204).send();
+    // get the data for the user document
+    userRef.get()
+        .then((doc) => {
+            if (doc.exists) {
+                // delete the user
+                userRef.delete()
+                    .then(() => {
+                        // return a 204 to indicate that the delete was successful
+                        res.status(204).send('User deleted');
+                    })
+                    .catch((error) => {
+                        // handle any errors
+                        console.error(error);
+                        res.status(500).send('Something went wrong!');
+                    });
+            } else {
+                // return a 404 if the user was not found
+                res.status(404).send('User not found');
+            }
         })
         .catch((error) => {
             // handle any errors
