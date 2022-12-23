@@ -83,20 +83,31 @@ exports.getPost = (req, res) => {
         });
 };
 
+// update a post for a user
 exports.updatePost = (req, res) => {
-    const user = users.find((x) => x.id === req.params.userId);
-    if (user) {
-        const post = user.posts.find((x) => x.id === req.params.id);
-        if (post) {
-            post.title = req.body.title;
-            post.description = req.body.description;
-            res.status(200).json(post);
-        } else {
-            res.status(404).send('Post not found');
-        }
-    } else {
-        res.status(404).send('User not found');
-    }
+    // get a reference to the user document
+    const userRef = db.collection('users').doc(req.params.userId);
+
+    // get a reference to the specific post document
+    const postRef = userRef.collection('posts').doc(req.params.postId);
+
+    // update the data for the post
+    postRef.update({
+        title: req.body.title,
+        description: req.body.description,
+    })
+        .then(() => {
+            // return the updated post data
+            postRef.get()
+                .then((doc) => {
+                    res.send(doc.data());
+                });
+        })
+        .catch((error) => {
+            // handle any errors
+            console.error(error);
+            res.status(500).send('Something went wrong!');
+        });
 };
 
 exports.deletePost = (req, res) => {
